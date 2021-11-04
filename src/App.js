@@ -34,7 +34,7 @@ function App() {
             <Switch>
                 <Route exact path="/" component={Home}/>
                 <Route path="/events" component={Events}/>
-                <Route path="/new-event" component={NewEvent}/>
+                <Route path="/new-event" render={() => <NewEvent events={events}/>}/>
             </Switch>
         </Router>
     );

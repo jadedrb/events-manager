@@ -40,6 +40,7 @@ const Events = () => {
         <div>
             {renderEvents()}
             {renderModal()}
+            <button id="flush" onClick={() => localStorage.clear() }>...</button>
         </div>
     )
 }

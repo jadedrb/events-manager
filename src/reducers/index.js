@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import eventReducer from './eventReducer';
 
 const rootReducer = combineReducers({
-    events: eventReducer                              
+    events: eventReducer                             
 })
 
 export default rootReducer;

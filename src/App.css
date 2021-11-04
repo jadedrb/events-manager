@@ -43,15 +43,30 @@ body {
   padding: 5px;
 }
 
+#date-langar div {
+  display: flex;
+  flex-direction: row;
+}
+
 /* Event */
 
 .event {
   border: 1px solid black;
   text-align: center;
+  display: flex;
+  justify-content: space-around;
 }
 
 .event:hover {
   cursor: pointer;
+}
+
+.event h5 {
+  opacity: .4;
+}
+
+.event h4 {
+  opacity: .6;
 }
 
 /* EventModal ... inside Events */
@@ -80,4 +95,15 @@ body {
   background-color: black;
   height: 100vh;
   width: 100vw;
+}
+
+/*  Extra... can delete */
+
+#flush {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: .5;
+  border: 1px solid black;
+  background-color: transparent;
 }
