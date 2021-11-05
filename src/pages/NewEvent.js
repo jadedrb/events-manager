@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { v4 as uuid } from 'uuid'
 
@@ -12,7 +12,10 @@ const NewEvent = (props) => {
     let dispatch = useDispatch()
     let history = useHistory()
 
+    let user = useSelector(state => state.users.currentUser)
+
     let [event, setEvent] = useState({
+        user: user,
         type: '',
         startDate: '',
         endDate: '',
@@ -31,11 +34,15 @@ const NewEvent = (props) => {
             ...prevEvent, 
             langarDate: { dd: currentDay(), mm: currentMonth(), yy: currentYear() }, 
         }))
-
+  
     }, [])
 
     useEffect(() => {
-        // Handles filtering of available days and months when necessary
+        if (!event.startDate) setEvent(prevEvent => ({ ...prevEvent, endDate: '' }))
+    }, [event.startDate])
+
+    useEffect(() => {
+        // Handles filtering of available days and months for langar events when necessary 
         if (event.type === "langar") {
 
             let availDays = []
@@ -46,8 +53,7 @@ const NewEvent = (props) => {
             let availMonthObj = {}
             let dayWasAlreadyTaken = []
 
-            // Find days that have aleady been taken. They must be of the current year and month selected
-            // Reduce it into an array of string numbers.
+            // Find days that have aleady been taken. 
             for (let i = 0; i < props.events.length; i++) {
 
                 let curr = props.events[i]
@@ -94,7 +100,7 @@ const NewEvent = (props) => {
                 // skip current month if no available days taking into account the offset of days passed
                 if (currYear && currMon && availMonthObj[i] && availMonthObj[i].length >= totalDaysInCurrMon - Number(currentDay())) continue
 
-                // skip any month other month if all days taken
+                // skip any other months if all days taken
                 if (availMonthObj[i] && availMonthObj[i].length >= calcDaysInMonth(event.langarDate.yy, i)) continue
 
                 // otherwise add month to available months
@@ -134,7 +140,7 @@ const NewEvent = (props) => {
 
     const packageEvent = () => {
         let newEvent;
-        let baseEvent = { id: uuid(), place: event.place, type: event.type }
+        let baseEvent = { user, id: uuid(), place: event.place, type: event.type }
 
         if (event.type === "langar") {
             newEvent = {
@@ -181,15 +187,10 @@ const NewEvent = (props) => {
             currentStorage = localStorage.getItem("events")
         }
 
-        console.log(currentStorage)
-
         let parsedCurrentEvents = JSON.parse(currentStorage)
 
         let newStorage = [...parsedCurrentEvents, newEvent]
         let stringNewStorage = JSON.stringify(newStorage)
-
-        console.log(newStorage, 'newStorage')
-        console.log(stringNewStorage, 'stringNewStorage')
 
         localStorage.setItem("events", stringNewStorage)
         
@@ -218,6 +219,8 @@ const NewEvent = (props) => {
 
     let interact = !event.type ? greyedOutStyle : null 
     let paath = event.type !== "langar" 
+    let interactMore = !paath || !event.startDate ? greyedOutStyle : null
+
 
     return (
         <form className="ne-form" onSubmit={handleSubmit}>
@@ -256,16 +259,18 @@ const NewEvent = (props) => {
                 <input 
                     name="startDate" 
                     type="date"
+                    value={event.startDate}
                     onChange={handleChange}
                 />
             </label>}
 
-            {paath &&
-            <label style={interact}>
+            {paath && 
+            <label style={interactMore}>
                 End Date
                 <input 
                     name="endDate" 
                     type="date"
+                    value={event.endDate}
                     onChange={handleChange}
                 />
             </label>}
@@ -274,6 +279,7 @@ const NewEvent = (props) => {
                 Place Name
                 <input 
                     name="place" 
+                    value={event.place}
                     onChange={handleChange}
                 />
             </label>
@@ -283,6 +289,7 @@ const NewEvent = (props) => {
                 Address
                 <input 
                     name="address" 
+                    value={event.address}
                     onChange={handleChange}
                 />
             </label>}
@@ -292,6 +299,7 @@ const NewEvent = (props) => {
                 Phone Number
                 <input 
                     name="number" 
+                    value={event.number}
                     onChange={handleChange}
                 />
             </label>}
