@@ -26,11 +26,11 @@ const NewEvent = (props) => {
 
     useEffect(() => {
         // Determine default dates for Langar type events
-        setEvent({ 
-            ...event, 
-            langarDate: { dd: String(new Date().getDay()), mm: currentMonth(), yy: currentYear() }, 
-            availMonths: [...Array(13).keys()].slice(currentMonth()) 
-        })
+        // Using a functional update because otherwise it complains. Besides that nothing different going on here
+        setEvent(prevEvent => ({ 
+            ...prevEvent, 
+            langarDate: { dd: currentDay(), mm: currentMonth(), yy: currentYear() }, 
+        }))
 
     }, [])
 
@@ -43,40 +43,81 @@ const NewEvent = (props) => {
             let thisMonth = currentMonth() === event.langarDate.mm && thisYear
             let startDay = thisMonth ? new Date().getDay() : 1
 
+            let availMonthObj = {}
+            let dayWasAlreadyTaken = []
+
             // Find days that have aleady been taken. They must be of the current year and month selected
             // Reduce it into an array of string numbers.
-            let dayWasAlreadyTaken = props.events.reduce((acc, curr) => {
-                if (curr.langarDate.mm === event.langarDate.mm &&
-                    curr.langarDate.yy === event.langarDate.yy) {
-                    return [...acc, curr.langarDate.dd]
+            for (let i = 0; i < props.events.length; i++) {
+
+                let curr = props.events[i]
+
+                if (!curr.langarDate) continue
+
+                let { mm, yy, dd } = curr.langarDate
+
+                // Handle days in other months
+                if (mm in availMonthObj) availMonthObj[mm].push(dd)
+                else {
+                    
+                    availMonthObj[mm] = [dd]
+                    console.log(yy, availMonthObj[mm])
                 }
-                return acc
-            }, [])
+
+                // Handle days in current month
+                if (mm === event.langarDate.mm && 
+                    yy === event.langarDate.yy) {
+                    dayWasAlreadyTaken.push(dd)
+                }
+    
+            }
+
+            let totalDaysInCurrMon = calcDaysInMonth(event.langarDate.yy, event.langarDate.mm)
 
             // Make an array of available days based off taken days. Will be used for determining selectability
-            for (let i = startDay; i <= calcDaysInMonth(event.langarDate.yy, event.langarDate.mm); i++) {
+            for (let i = startDay; i <= totalDaysInCurrMon; i++) {
                 if (dayWasAlreadyTaken.includes(String(i))) continue
                 availDays.push(i)
             }
 
-            // Change available months based off year
-            let availMonths = thisYear ? [...Array(13).keys()].slice(currentMonth()) : [...Array(13).keys()].slice(1)
+            let availMonths = []
 
-            setEvent({ ...event, availDays, availMonths, langarDate: { ...event.langarDate, dd: String(availDays[0]) }})
+            // Determine available months
+            for (let i = 1; i < 13; i++) {
+        
+                let currMon = String(i) === currentMonth()
+                let currYear = event.langarDate.yy === currentYear()
+
+                // skip any months prior to current
+                if (currYear && i < Number(currentMonth())) continue
+
+                // skip current month if no available days taking into account the offset of days passed
+                if (currYear && currMon && availMonthObj[i] && availMonthObj[i].length >= totalDaysInCurrMon - Number(currentDay())) continue
+
+                // skip any month other month if all days taken
+                if (availMonthObj[i] && availMonthObj[i].length >= calcDaysInMonth(event.langarDate.yy, i)) continue
+
+                // otherwise add month to available months
+                availMonths.push(i)
+            }
+
+            setEvent(prevEvent => ({ 
+                ...prevEvent, 
+                availDays, 
+                availMonths, 
+                langarDate: { ...prevEvent.langarDate, dd: String(availDays[0]), mm: availMonths.includes(Number(prevEvent.langarDate.mm)) ? prevEvent.langarDate.mm : String(availMonths[0]) }
+            }))
             
         }
-    }, [event.type, event.langarDate.mm, event.langarDate.yy])
+    }, [event.type, event.langarDate.mm, event.langarDate.yy, props.events])
 
+    // Utility functions... maybe to be put in a separate file and exported
     const calcDaysInMonth = (year, month) => new Date(year, month, 0).getDate()
-
     const currentYear = () => String(new Date().getFullYear())
     const currentMonth = () => String(new Date().getMonth() + 1)
-
-    const calculateNextYear = () => {
-        let currentYear = new Date().getFullYear()
-        currentYear++
-        return String(currentYear)
-    }
+    const currentDay = () => String(new Date().getDay())
+    const createMonthArr = (initial, cutoffPoint) => [...Array(initial).keys()].slice(cutoffPoint)
+    const calcNextYear = () => Number(currentYear()) + 1
 
     const handleChange = (e) => {
         let { name, value } = e.target
@@ -156,13 +197,14 @@ const NewEvent = (props) => {
 
     const renderDays = () => {
         // Get an array of days for the current month
-        let days = [...Array(calcDaysInMonth(event.langarDate.yy, event.langarDate.mm) + 1).keys()].slice(1)
+        let daysInMonth = calcDaysInMonth(event.langarDate.yy, event.langarDate.mm) + 1
+        let days = createMonthArr(daysInMonth, 1)
         let options = days.map(d => <option value={d} key={d} disabled={!event.availDays.includes(d)}>{d}</option>)
         return options
     }
 
     const renderMonths = () => {
-        let months = [...Array(13).keys()].slice(1)
+        let months = createMonthArr(13, 1)
         let options = months.map(m => <option value={m} key={m} disabled={!event.availMonths.includes(m)}>{m}</option>)
         return options
     }
@@ -196,14 +238,14 @@ const NewEvent = (props) => {
                     <select value={event.langarDate.mm} name="langarDate-mm" onChange={handleChange}>
                         {renderMonths()}
                     </select>
-                    
+                    /
                     <select value={event.langarDate.dd} name="langarDate-dd" onChange={handleChange}>
                         {renderDays()}
                     </select>
-                    
+                    /
                     <select value={event.langarDate.yy} name="langarDate-yy" onChange={handleChange}>
                         <option value={currentYear()}>{currentYear()}</option>
-                        <option value={calculateNextYear()}>{calculateNextYear()}</option>
+                        <option value={calcNextYear()}>{calcNextYear()}</option>
                     </select>
                 </div>
             </label>}

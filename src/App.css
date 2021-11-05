@@ -46,6 +46,8 @@ body {
 #date-langar div {
   display: flex;
   flex-direction: row;
+  justify-content: space-around;
+  width: 150px;
 }
 
 /* Event */
@@ -69,7 +71,7 @@ body {
   opacity: .6;
 }
 
-/* EventModal ... inside Events */
+/* EventModal */
 
 .event-modal {
   border: 1px solid orange;

@@ -1,8 +1,14 @@
 import React from 'react';
+import Modal from './Modal'
 
-const EventModal = () => {
+const EventModal = ({ toggleDetails }) => {
     return ( 
-        <div>Wow</div>
+        <Modal>
+            <div className='event-modal'>
+                <div>Time Slots</div>
+            </div>
+            <div className='event-modal-cloud' onClick={toggleDetails}></div>
+        </Modal>
     );
 }
  

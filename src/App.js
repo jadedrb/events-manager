@@ -18,7 +18,6 @@ function App() {
     let events = useSelector(state => state.events.events)
 
     useEffect(() => {
-
         // pretend backend
         let currentStorage = localStorage.getItem("events")
         if (currentStorage) {
@@ -26,7 +25,7 @@ function App() {
             console.log(parsedStorage)
             dispatch(setEvent(parsedStorage))
         }
-    }, [])
+    }, [dispatch]) // Only adding this because it was complaining without it. Still a ComponentDidMount
 
     return (
         <Router>

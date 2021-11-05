@@ -1,15 +1,17 @@
 import React from 'react';
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom';
 
 import { toggleEventDetails } from '../actions/actions'
 
 const Event = ({ event }) => {
 
     let dispatch = useDispatch()
+    let history = useHistory()
 
     const handleClick = () => {
-        alert('clicked')
         dispatch(toggleEventDetails(event))
+        history.replace(`/events/${event.id}`)
     }
 
     const displayDate = () => {
