@@ -1,3 +1,11 @@
+/*
+  All CSS is currently in this one file, but should probably
+  be separated into individual files later
+*/
+
+
+/* General */ 
+
 nav {
   width: 50vw;
   border: 1px solid black;
@@ -18,7 +26,7 @@ body {
   margin: 0;
 }
 
-/* NewEvent */
+/* NewEvent */     /* <-- name of the component this CSS applies to */  
 
 .ne-form {
   border: 1px solid black;
@@ -43,14 +51,7 @@ body {
   padding: 5px;
 }
 
-#date-langar div {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  width: 150px;
-}
-
-/* Event */
+/* Event */       /* <-- name of the component this CSS applies to */
 
 .event {
   border: 1px solid black;
@@ -131,3 +132,12 @@ body {
   border: 1px solid black;
   background-color: transparent;
 }
+
+/* 
+#date-langar div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 150px;
+}
+*/

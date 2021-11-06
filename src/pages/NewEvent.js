@@ -7,7 +7,14 @@ import { v4 as uuid } from 'uuid'
 
 import { addEvent } from '../actions/actions';
 
+import Dropdown from '../components/Dropdown';
+import Calendar from 'react-calendar';
+
+import 'react-calendar/dist/Calendar.css';
+
 const NewEvent = (props) => {
+
+    let [calendar, setCalendar] = useState(new Date())
 
     let dispatch = useDispatch()
     let history = useHistory()
@@ -173,7 +180,7 @@ const NewEvent = (props) => {
         /*
             (NOTE: All code below can be deleted. Mostly for development purposes)
             
-                1. Get pretend backend 
+                1. Get pretend backend from local storage
                 2. If no pretend backend present, create it
                 3. Parse local storage string into javascript object/array
                 4. Spread resulting array into new array with new event included
@@ -196,21 +203,10 @@ const NewEvent = (props) => {
         
     }
 
-    const renderDays = () => {
-        // Get an array of days for the current month
-        let daysInMonth = calcDaysInMonth(event.langarDate.yy, event.langarDate.mm) + 1
-        let days = createMonthArr(daysInMonth, 1)
-        let options = days.map(d => <option value={d} key={d} disabled={!event.availDays.includes(d)}>{d}</option>)
-        return options
+    const handleClickedDay = (value, event) => {
+        console.log(value)
+        console.log(event)
     }
-
-    const renderMonths = () => {
-        let months = createMonthArr(13, 1)
-        let options = months.map(m => <option value={m} key={m} disabled={!event.availMonths.includes(m)}>{m}</option>)
-        return options
-    }
-
-    renderDays()
 
     let greyedOutStyle = {
         opacity: ".1",
@@ -237,20 +233,13 @@ const NewEvent = (props) => {
             {!paath &&
             <label style={interact} id="date-langar">
                 Date
-                <div>
-                    <select value={event.langarDate.mm} name="langarDate-mm" onChange={handleChange}>
-                        {renderMonths()}
-                    </select>
-                    /
-                    <select value={event.langarDate.dd} name="langarDate-dd" onChange={handleChange}>
-                        {renderDays()}
-                    </select>
-                    /
-                    <select value={event.langarDate.yy} name="langarDate-yy" onChange={handleChange}>
-                        <option value={currentYear()}>{currentYear()}</option>
-                        <option value={calcNextYear()}>{calcNextYear()}</option>
-                    </select>
-                </div>
+                <Calendar 
+                    value={calendar}
+                    onChange={setCalendar}
+                    minDate={new Date()}
+                    maxDetail={"month"}
+                    onClickDay={handleClickedDay}
+                />
             </label>}
 
             {paath &&
@@ -284,7 +273,6 @@ const NewEvent = (props) => {
                 />
             </label>
 
-            {paath &&
             <label style={interact}>
                 Address
                 <input 
@@ -292,9 +280,8 @@ const NewEvent = (props) => {
                     value={event.address}
                     onChange={handleChange}
                 />
-            </label>}
+            </label>
 
-            {!paath &&
             <label style={interact}>
                 Phone Number
                 <input 
@@ -302,10 +289,11 @@ const NewEvent = (props) => {
                     value={event.number}
                     onChange={handleChange}
                 />
-            </label>}
-
+            </label>
+                
             <button>Create</button>
         </form>
+            
     )
 }
 
