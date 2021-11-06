@@ -7,10 +7,10 @@ import { v4 as uuid } from 'uuid'
 
 import { addEvent } from '../actions/actions';
 
-import Dropdown from '../components/Dropdown';
 import Calendar from 'react-calendar';
 
 import 'react-calendar/dist/Calendar.css';
+import '../styles/newEvent.css';
 
 const NewEvent = (props) => {
 
@@ -30,8 +30,9 @@ const NewEvent = (props) => {
         address: '',
         number: '',
         langarDate: { dd: '', mm: '', yy: '' },
-        availDays: [],
-        availMonths: []
+        langarD: '',
+        bookedDays: [],
+        selectedDay: { dd: '', mm: '', yy: '' }
     })
 
     useEffect(() => {
@@ -52,13 +53,7 @@ const NewEvent = (props) => {
         // Handles filtering of available days and months for langar events when necessary 
         if (event.type === "langar") {
 
-            let availDays = []
-            let thisYear = currentYear() === event.langarDate.yy
-            let thisMonth = currentMonth() === event.langarDate.mm && thisYear
-            let startDay = thisMonth ? new Date().getDay() : 1
-
-            let availMonthObj = {}
-            let dayWasAlreadyTaken = []
+            let bookedDays = []
 
             // Find days that have aleady been taken. 
             for (let i = 0; i < props.events.length; i++) {
@@ -69,60 +64,23 @@ const NewEvent = (props) => {
 
                 let { mm, yy, dd } = curr.langarDate
 
-                // Handle days in other months
-                if (mm in availMonthObj) availMonthObj[mm].push(dd)
-                else {
-                    
-                    availMonthObj[mm] = [dd]
-                    console.log(yy, availMonthObj[mm])
-                }
-
                 // Handle days in current month
+                console.log(event.langarDate)
                 if (mm === event.langarDate.mm && 
                     yy === event.langarDate.yy) {
-                    dayWasAlreadyTaken.push(dd)
+                    bookedDays.push(dd)
                 }
     
             }
-
-            let totalDaysInCurrMon = calcDaysInMonth(event.langarDate.yy, event.langarDate.mm)
-
-            // Make an array of available days based off taken days. Will be used for determining selectability
-            for (let i = startDay; i <= totalDaysInCurrMon; i++) {
-                if (dayWasAlreadyTaken.includes(String(i))) continue
-                availDays.push(i)
-            }
-
-            let availMonths = []
-
-            // Determine available months
-            for (let i = 1; i < 13; i++) {
-        
-                let currMon = String(i) === currentMonth()
-                let currYear = event.langarDate.yy === currentYear()
-
-                // skip any months prior to current
-                if (currYear && i < Number(currentMonth())) continue
-
-                // skip current month if no available days taking into account the offset of days passed
-                if (currYear && currMon && availMonthObj[i] && availMonthObj[i].length >= totalDaysInCurrMon - Number(currentDay())) continue
-
-                // skip any other months if all days taken
-                if (availMonthObj[i] && availMonthObj[i].length >= calcDaysInMonth(event.langarDate.yy, i)) continue
-
-                // otherwise add month to available months
-                availMonths.push(i)
-            }
+            console.log(bookedDays)
 
             setEvent(prevEvent => ({ 
                 ...prevEvent, 
-                availDays, 
-                availMonths, 
-                langarDate: { ...prevEvent.langarDate, dd: String(availDays[0]), mm: availMonths.includes(Number(prevEvent.langarDate.mm)) ? prevEvent.langarDate.mm : String(availMonths[0]) }
+                bookedDays
             }))
             
         }
-    }, [event.type, event.langarDate.mm, event.langarDate.yy, props.events])
+    }, [event.langarDate, event.type, event.langarDate.mm, event.langarDate.yy, props.events])
 
     // Utility functions... maybe to be put in a separate file and exported
     const calcDaysInMonth = (year, month) => new Date(year, month, 0).getDate()
@@ -132,17 +90,30 @@ const NewEvent = (props) => {
     const createMonthArr = (initial, cutoffPoint) => [...Array(initial).keys()].slice(cutoffPoint)
     const calcNextYear = () => Number(currentYear()) + 1
 
-    const handleChange = (e) => {
-        let { name, value } = e.target
+    const formatLangarDate = (date) => {
+        let mm = date.getMonth() + 1
+        let yy = date.getFullYear()
+        let dd = date.getDate()
+        if (mm < 10) mm = '0' + mm
+        if (dd < 10) dd = '0' + dd
+        dd = String(dd)
+        mm = String(mm)
+        yy = String(yy)
+        return { dd, mm, yy }
+    }
 
-        if (name.includes("langarDate")) {
-            let split = name.split("-")
-            let dmy = split[1]
-            setEvent({ ...event, langarDate: { ...event.langarDate, [dmy]: value }})
+    const handleChange = (e, e2) => {
+        let name, value;
+
+        if (e.target) {
+            name = e.target.name
+            value = e.target.value
+        } else {
+            setEvent({ ...event, langarDate: formatLangarDate(e), selectedDay: formatLangarDate(e) })
             return
         }
 
-        setEvent({ ...event, [name]: value})
+        setEvent({ ...event, selectedDay: { dd: '', mm: '', yy: '' }, [name]: value})
     }
 
     const packageEvent = () => {
@@ -152,7 +123,7 @@ const NewEvent = (props) => {
         if (event.type === "langar") {
             newEvent = {
                 ...baseEvent,
-                langarDate: event.langarDate,
+                langarDate: event.selectedDay,
                 phone: event.number
             }
         } else {
@@ -203,9 +174,26 @@ const NewEvent = (props) => {
         
     }
 
-    const handleClickedDay = (value, event) => {
-        console.log(value)
-        console.log(event)
+    const handleBookedDayStyle = ({ date, view }) => {
+        console.log(event.bookedDays)
+        let tileDate = String(date.getDate())
+        if (event.bookedDays.includes(tileDate))
+            return 'booked-day'
+        else 
+            return null
+    }
+
+    const handleDisabledDays = ({ activeStartDate, date, view }) => {
+        let tileDate = String(date.getDate())
+        if (event.bookedDays.includes(tileDate))
+            return true
+        else 
+            return false
+    }
+
+    const handlePreviousOrNext = ({ action, activeStartDate, value, view }) => {
+        console.log('activeStateChange: ', { activeStartDate, value, view, action })
+        setEvent({ ...event, langarDate: formatLangarDate(activeStartDate)})
     }
 
     let greyedOutStyle = {
@@ -233,12 +221,23 @@ const NewEvent = (props) => {
             {!paath &&
             <label style={interact} id="date-langar">
                 Date
+                <input 
+                    name="endDate" 
+                    value={`${event.selectedDay.yy}-${event.selectedDay.mm}-${event.selectedDay.dd}`}
+                    type="date" 
+                    disabled 
+                />
                 <Calendar 
+                    name={"langarDate"}
                     value={calendar}
                     onChange={setCalendar}
                     minDate={new Date()}
                     maxDetail={"month"}
-                    onClickDay={handleClickedDay}
+                    showNeighboringMonth={false}
+                    onClickDay={handleChange}
+                    tileClassName={handleBookedDayStyle}
+                    onActiveStartDateChange={handlePreviousOrNext}
+                    tileDisabled={handleDisabledDays}
                 />
             </label>}
 
@@ -291,7 +290,7 @@ const NewEvent = (props) => {
                 />
             </label>
                 
-            <button>Create</button>
+            <button className='create-button'>Create</button>
         </form>
             
     )

@@ -3,6 +3,8 @@ import Modal from './Modal';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+import '../styles/eventModal.css'
+
 const EventModal = ({ toggleDetails }) => {
 
     let location = useLocation()

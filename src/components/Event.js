@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom';
 
 import { toggleEventDetails } from '../actions/actions'
 
+import '../styles/event.css'
+
 const Event = ({ event }) => {
 
     let dispatch = useDispatch()
