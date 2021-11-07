@@ -52,7 +52,7 @@ const NewEvent = (props) => {
     }, [event.type])
 
     useEffect(() => {
-        if (!event.startDate) setEvent(prevEvent => ({ ...prevEvent, endDate: '' }))
+        setEvent(prevEvent => ({ ...prevEvent, endDate: '' }))
     }, [event.startDate])
 
     useEffect(() => {
@@ -276,6 +276,7 @@ const NewEvent = (props) => {
                 End Date
                 <input 
                     name="endDate" 
+                    min={event.startDate}
                     type="date"
                     value={event.endDate}
                     onChange={handleChange}
