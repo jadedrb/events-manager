@@ -1,0 +1,24 @@
+.event {
+    border: 1px solid black;
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .event:hover {
+    cursor: pointer;
+    background-color: rgb(228, 228, 228);
+  }
+  
+  .event:active {
+    background-color: rgb(121, 155, 194);
+  }
+  
+  .event h5 {
+    opacity: .4;
+  }
+  
+  .event h4 {
+    opacity: .6;
+  }
+  

@@ -1,0 +1,87 @@
+.ne-form {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    padding: 100px;
+    align-items: center;
+  }
+  
+  .ne-form label {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+  }
+  
+  .create-button {
+    width: 100px;
+    margin-top: 50px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  
+  #date-langar input {
+      width: 140px;
+      display: flex;
+      margin: 10px;
+      margin-left: 110px;
+  }
+  
+  #date-langar {
+    position: relative;
+    text-align: center;
+  }
+
+  .booked-details {
+    display: none;
+  }
+
+  .booked-details.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    position: absolute;
+    opacity: .9;
+    background-color: white;
+    border: 1px dotted black;
+    border-radius: 5px;
+    height: 100%;
+    width: 100%;
+  }
+
+  .booked-details div:nth-child(1) span {
+    font-weight: bolder;
+  }
+
+  .booked-details div:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .booked-details div:nth-child(2) span {
+    color: grey;
+  }
+
+  .booked-details div:nth-child(3) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .booked-details div:nth-child(3) span {
+    color: grey;
+  }
+
+  .booked-details div:nth-child(4) span {
+    color: rgb(114, 155, 243);
+  }
+
+  .booked-details div:nth-child(4) :hover {
+    color: rgb(18, 87, 235);
+    cursor: pointer;
+  }
+
+
+
+  
+ 
