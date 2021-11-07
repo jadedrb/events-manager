@@ -9,7 +9,7 @@ import { addEvent } from '../actions/actions';
 
 import Calendar from 'react-calendar';
 
-import 'react-calendar/dist/Calendar.css';
+import '../styles/calendar.css'
 import '../styles/newEvent.css';
 
 const NewEvent = (props) => {
@@ -30,20 +30,24 @@ const NewEvent = (props) => {
         address: '',
         number: '',
         langarDate: { dd: '', mm: '', yy: '' },
-        langarD: '',
-        bookedDays: [],
+        bookedDays: {},
         selectedDay: { dd: '', mm: '', yy: '' }
     })
 
     useEffect(() => {
         // Determine default dates for Langar type events
         // Using a functional update because otherwise it complains. Besides that nothing different going on here
-        setEvent(prevEvent => ({ 
-            ...prevEvent, 
-            langarDate: { dd: currentDay(), mm: currentMonth(), yy: currentYear() }, 
-        }))
+        console.log({ dd: currentDay(), mm: currentMonth(), yy: currentYear() })
+        if (event.type === "langar") {
+            setEvent(prevEvent => ({ 
+                ...prevEvent, 
+                langarDate: formatLangarDate(new Date()), 
+            }))
+        } else {
+            setEvent(prevEvent => ({ ...prevEvent, selectedDay: blank(), langarDate: blank() }))
+        }
   
-    }, [])
+    }, [event.type])
 
     useEffect(() => {
         if (!event.startDate) setEvent(prevEvent => ({ ...prevEvent, endDate: '' }))
@@ -53,7 +57,7 @@ const NewEvent = (props) => {
         // Handles filtering of available days and months for langar events when necessary 
         if (event.type === "langar") {
 
-            let bookedDays = []
+            let bookedDays = {}
 
             // Find days that have aleady been taken. 
             for (let i = 0; i < props.events.length; i++) {
@@ -65,20 +69,19 @@ const NewEvent = (props) => {
                 let { mm, yy, dd } = curr.langarDate
 
                 // Handle days in current month
-                console.log(event.langarDate)
                 if (mm === event.langarDate.mm && 
                     yy === event.langarDate.yy) {
-                    bookedDays.push(dd)
+                    
+                    bookedDays[dd] = { dd, event: curr }
                 }
     
             }
-            console.log(bookedDays)
 
             setEvent(prevEvent => ({ 
                 ...prevEvent, 
                 bookedDays
             }))
-            
+
         }
     }, [event.langarDate, event.type, event.langarDate.mm, event.langarDate.yy, props.events])
 
@@ -89,6 +92,7 @@ const NewEvent = (props) => {
     const currentDay = () => String(new Date().getDay())
     const createMonthArr = (initial, cutoffPoint) => [...Array(initial).keys()].slice(cutoffPoint)
     const calcNextYear = () => Number(currentYear()) + 1
+    const addAzero = (date) => date < 10 ? '0' + String(date) : date
 
     const formatLangarDate = (date) => {
         let mm = date.getMonth() + 1
@@ -102,18 +106,26 @@ const NewEvent = (props) => {
         return { dd, mm, yy }
     }
 
+    const blank = () => ({ mm: '', yy: '', dd: '' })
+
     const handleChange = (e, e2) => {
         let name, value;
-
+        
         if (e.target) {
             name = e.target.name
             value = e.target.value
         } else {
+            let day = e.getDate()
+            if (day in event.bookedDays) {
+                console.log('booked: ', event.bookedDays[day])
+                alert('booked')
+                return 
+            }
             setEvent({ ...event, langarDate: formatLangarDate(e), selectedDay: formatLangarDate(e) })
             return
         }
-
-        setEvent({ ...event, selectedDay: { dd: '', mm: '', yy: '' }, [name]: value})
+     
+        setEvent({ ...event, [name]: value})
     }
 
     const packageEvent = () => {
@@ -149,7 +161,7 @@ const NewEvent = (props) => {
         dispatch(addEvent(newEvent))
 
         /*
-            (NOTE: All code below can be deleted. Mostly for development purposes)
+            (NOTE: All local storage code below can be deleted. Mostly for development purposes)
             
                 1. Get pretend backend from local storage
                 2. If no pretend backend present, create it
@@ -174,26 +186,29 @@ const NewEvent = (props) => {
         
     }
 
-    const handleBookedDayStyle = ({ date, view }) => {
-        console.log(event.bookedDays)
+    const handleBookedDayStyle = ({ date }) => {
         let tileDate = String(date.getDate())
-        if (event.bookedDays.includes(tileDate))
+        // let match = b => b === tileDate || '0' + tileDate === b
+        if (tileDate in event.bookedDays)
             return 'booked-day'
         else 
             return null
     }
-
-    const handleDisabledDays = ({ activeStartDate, date, view }) => {
+/*
+    const handleDisabledDays = ({ date }) => {
         let tileDate = String(date.getDate())
-        if (event.bookedDays.includes(tileDate))
+        let match = b => b === tileDate || '0' + tileDate === b
+        if (event.bookedDays.some(match))
             return true
         else 
             return false
     }
-
-    const handlePreviousOrNext = ({ action, activeStartDate, value, view }) => {
-        console.log('activeStateChange: ', { activeStartDate, value, view, action })
+    
+    tileDisabled={handleDisabledDays}
+*/
+    const handlePreviousOrNext = ({ activeStartDate }) => {
         setEvent({ ...event, langarDate: formatLangarDate(activeStartDate)})
+        console.log('next or previous')
     }
 
     let greyedOutStyle = {
@@ -204,7 +219,6 @@ const NewEvent = (props) => {
     let interact = !event.type ? greyedOutStyle : null 
     let paath = event.type !== "langar" 
     let interactMore = !paath || !event.startDate ? greyedOutStyle : null
-
 
     return (
         <form className="ne-form" onSubmit={handleSubmit}>
@@ -237,7 +251,6 @@ const NewEvent = (props) => {
                     onClickDay={handleChange}
                     tileClassName={handleBookedDayStyle}
                     onActiveStartDateChange={handlePreviousOrNext}
-                    tileDisabled={handleDisabledDays}
                 />
             </label>}
 
