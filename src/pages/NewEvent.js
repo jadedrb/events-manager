@@ -41,14 +41,14 @@ const NewEvent = (props) => {
         // Using a functional update because otherwise it complains. Besides that nothing different going on here
         console.log({ dd: currentDay(), mm: currentMonth(), yy: currentYear() })
         if (event.type === "langar") {
-            setEvent(prevEvent => ({ 
-                ...prevEvent, 
-                langarDate: formatLangarDate(new Date()), 
+            setEvent(prevEvent => ({
+                ...prevEvent,
+                langarDate: formatLangarDate(new Date()),
             }))
         } else {
             setEvent(prevEvent => ({ ...prevEvent, selectedDay: blank(), langarDate: blank() }))
         }
-  
+
     }, [event.type])
 
     useEffect(() => {
@@ -71,16 +71,16 @@ const NewEvent = (props) => {
                 let { mm, yy, dd } = ev.langarDate
 
                 // Handle days in event month
-                if (mm === event.langarDate.mm && 
+                if (mm === event.langarDate.mm &&
                     yy === event.langarDate.yy) {
-                    
+
                     bookedDays[dd] = { dd, ev }
                 }
-    
+
             }
 
-            setEvent(prevEvent => ({ 
-                ...prevEvent, 
+            setEvent(prevEvent => ({
+                ...prevEvent,
                 bookedDays
             }))
 
@@ -112,7 +112,7 @@ const NewEvent = (props) => {
 
     const handleChange = (e, e2) => {
         let name, value;
-        
+
         if (e.target) {
             name = e.target.name
             value = e.target.value
@@ -120,14 +120,14 @@ const NewEvent = (props) => {
             let day = e.getDate()
             if (day in event.bookedDays) {
                 detailsRef.current.classList.add('active')
-                setEvent({ ...event, bookedDetails: event.bookedDays[day]})
-                return 
+                setEvent({ ...event, bookedDetails: event.bookedDays[day] })
+                return
             }
             setEvent({ ...event, langarDate: formatLangarDate(e), selectedDay: formatLangarDate(e) })
             return
         }
-     
-        setEvent({ ...event, [name]: value})
+
+        setEvent({ ...event, [name]: value })
     }
 
     const packageEvent = () => {
@@ -171,7 +171,7 @@ const NewEvent = (props) => {
                 4. Spread resulting array into new array with new event included
                 5. Store the new array in local storage
         */
-        
+
         let currentStorage = localStorage.getItem("events")
 
         if (!currentStorage) {
@@ -185,19 +185,19 @@ const NewEvent = (props) => {
         let stringNewStorage = JSON.stringify(newStorage)
 
         localStorage.setItem("events", stringNewStorage)
-        
+
     }
 
     const handleBookedDayStyle = ({ date }) => {
         let tileDate = String(date.getDate())
         if (tileDate in event.bookedDays)
             return 'booked-day'
-        else 
+        else
             return null
     }
 
     const handlePreviousOrNext = ({ activeStartDate }) => {
-        setEvent({ ...event, langarDate: formatLangarDate(activeStartDate)})
+        setEvent({ ...event, langarDate: formatLangarDate(activeStartDate) })
         console.log('next or previous')
     }
 
@@ -211,14 +211,14 @@ const NewEvent = (props) => {
         pointerEvents: "none"
     }
 
-    let interact = !event.type ? greyedOutStyle : null 
-    let paath = event.type !== "langar" 
+    let interact = !event.type ? greyedOutStyle : null
+    let paath = event.type !== "langar"
     let interactMore = !paath || !event.startDate ? greyedOutStyle : null
     let booked = event.bookedDetails
 
     return (
         <form className="ne-form" onSubmit={handleSubmit}>
-            
+
             <label>
                 Event Type
                 <select defaultValue="choose" onChange={handleChange} name="type" autoFocus>
@@ -229,65 +229,65 @@ const NewEvent = (props) => {
             </label>
 
             {!paath &&
-            <label style={interact} id="date-langar">
-                Date
-                <input 
-                    name="endDate" 
-                    value={`${event.selectedDay.yy}-${event.selectedDay.mm}-${event.selectedDay.dd}`}
-                    type="date" 
-                    disabled 
-                />
-                <Calendar 
-                    name={"langarDate"}
-                    value={calendar}
-                    onChange={setCalendar}
-                    minDate={new Date()}
-                    maxDetail={"month"}
-                    showNeighboringMonth={false}
-                    onClickDay={handleChange}
-                    tileClassName={handleBookedDayStyle}
-                    onActiveStartDateChange={handlePreviousOrNext}
-                />
-                <div 
-                    className="booked-details" 
-                    ref={detailsRef} 
-                    onClick={() => detailsRef.current.classList.remove('active')}
-                >
-                    <div><span>{`${booked.ev?.langarDate.mm}/${booked.ev?.langarDate.dd}/${booked.ev?.langarDate.yy}`}</span> has already been booked</div>
-                    <div><span>Booked by:</span> {booked.ev?.user}</div>
-                    <div><span>Phone number:</span> {booked.ev?.phone}</div>
-                    <div onClick={handleClickedDetails}><span>More details</span></div>
-                </div>
-            </label>}
+                <label style={interact} id="date-langar">
+                    Date
+                    <input
+                        name="endDate"
+                        value={`${event.selectedDay.yy}-${event.selectedDay.mm}-${event.selectedDay.dd}`}
+                        type="date"
+                        disabled
+                    />
+                    <Calendar
+                        name={"langarDate"}
+                        value={calendar}
+                        onChange={setCalendar}
+                        minDate={new Date()}
+                        maxDetail={"month"}
+                        showNeighboringMonth={false}
+                        onClickDay={handleChange}
+                        tileClassName={handleBookedDayStyle}
+                        onActiveStartDateChange={handlePreviousOrNext}
+                    />
+                    <div
+                        className="booked-details"
+                        ref={detailsRef}
+                        onClick={() => detailsRef.current.classList.remove('active')}
+                    >
+                        <div><span>{`${booked.ev?.langarDate.mm}/${booked.ev?.langarDate.dd}/${booked.ev?.langarDate.yy}`}</span> has already been booked</div>
+                        <div><span>Booked by:</span> {booked.ev?.user}</div>
+                        <div><span>Phone number:</span> {booked.ev?.phone}</div>
+                        <div onClick={handleClickedDetails}><span>More details</span></div>
+                    </div>
+                </label>}
 
             {paath &&
-            <label style={interact}>
-                Start Date
-                <input 
-                    name="startDate" 
-                    type="date"
-                    value={event.startDate}
-                    onChange={handleChange}
-                />
-            </label>}
+                <label style={interact}>
+                    Start Date
+                    <input
+                        name="startDate"
+                        type="date"
+                        value={event.startDate}
+                        onChange={handleChange}
+                    />
+                </label>}
 
-            {paath && 
-            <label style={interactMore}>
-                End Date
-                <input 
-                    name="endDate" 
-                    min={event.startDate}
-                    type="date"
-                    value={event.endDate}
-                    onChange={handleChange}
-                    required
-                />
-            </label>}
+            {paath &&
+                <label style={interactMore}>
+                    End Date
+                    <input
+                        name="endDate"
+                        min={event.startDate}
+                        type="date"
+                        value={event.endDate}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>}
 
             <label style={interact}>
                 Place Name
-                <input 
-                    name="place" 
+                <input
+                    name="place"
                     value={event.place}
                     onChange={handleChange}
                     required
@@ -296,8 +296,8 @@ const NewEvent = (props) => {
 
             <label style={interact}>
                 Address
-                <input 
-                    name="address" 
+                <input
+                    name="address"
                     value={event.address}
                     onChange={handleChange}
                     required
@@ -306,16 +306,20 @@ const NewEvent = (props) => {
 
             <label style={interact}>
                 Phone Number
-                <input 
-                    name="number" 
+                <input
+                    type= "tel"
+                    id="number"
+                    name="number"
                     value={event.number}
-                    onChange={handleChange}                    required
+                    placeholder="ex: 555-555-5555"
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    onChange={handleChange} required
                 />
             </label>
-                
+
             <button className='create-button'>Create</button>
         </form>
-            
+
     )
 }
 
