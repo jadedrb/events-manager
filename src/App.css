@@ -1,25 +1,40 @@
-/* General */ 
+/* Import Poppins font */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* General */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
 
 nav {
+  display:flex;
+  align-items: center;
   width: 50vw;
   border: 1px solid black;
   width: 100%;
 }
 
 ul {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  /* width: 100%; */
 }
-
 li {
   list-style: none;
 }
-
-body {
-  margin: 0;
+li a, button a {
+  text-decoration: none;
 }
 
+h1 svg {
+  padding: 0 1%;
+}
 
 
 /*  Extra... can delete */

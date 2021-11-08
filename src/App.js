@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 
 import NavBar from './components/NavBar';
@@ -11,6 +11,8 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
 
 import { setEvent } from './actions/actions'
+import NavBarTest from './components/NavBarTest';
+import Footer from './components/Footer';
 
 function App() {
 
@@ -29,12 +31,14 @@ function App() {
 
     return (
         <Router>
-            <NavBar/>
+            {/* <NavBar/> */}
+            <NavBarTest />
             <Switch>
-                <Route exact path="/" component={Home}/>
-                <Route path="/events" component={Events}/>
-                <Route path="/new-event" render={() => <NewEvent events={events}/>}/>
+                <Route exact path="/" component={Home} />
+                <Route path="/events" component={Events} />
+                <Route path="/new-event" render={() => <NewEvent events={events} />} />
             </Switch>
+            <Footer />
         </Router>
     );
 }
