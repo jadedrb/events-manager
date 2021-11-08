@@ -280,6 +280,7 @@ const NewEvent = (props) => {
                     type="date"
                     value={event.endDate}
                     onChange={handleChange}
+                    required
                 />
             </label>}
 
@@ -289,6 +290,7 @@ const NewEvent = (props) => {
                     name="place" 
                     value={event.place}
                     onChange={handleChange}
+                    required
                 />
             </label>
 
@@ -298,6 +300,7 @@ const NewEvent = (props) => {
                     name="address" 
                     value={event.address}
                     onChange={handleChange}
+                    required
                 />
             </label>
 
@@ -306,7 +309,7 @@ const NewEvent = (props) => {
                 <input 
                     name="number" 
                     value={event.number}
-                    onChange={handleChange}
+                    onChange={handleChange}                    required
                 />
             </label>
                 
