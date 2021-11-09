@@ -117,10 +117,11 @@ const NewEvent = (props) => {
             name = e.target.name
             value = e.target.value
         } else {
+            // handles selection of a date in the calendar
             let day = e.getDate()
             if (day in event.bookedDays) {
                 detailsRef.current.classList.add('active')
-                setEvent({ ...event, bookedDetails: event.bookedDays[day] })
+                setEvent({ ...event, bookedDetails: event.bookedDays[day], selectedDay: blank() })
                 return
             }
             setEvent({ ...event, langarDate: formatLangarDate(e), selectedDay: formatLangarDate(e) })
@@ -213,7 +214,7 @@ const NewEvent = (props) => {
 
     let interact = !event.type ? greyedOutStyle : null
     let paath = event.type !== "langar"
-    let interactMore = !paath || !event.startDate ? greyedOutStyle : null
+    let interactMore = (!paath && !event.selectedDay.dd) || (paath && !event.startDate) ? greyedOutStyle : null
     let booked = event.bookedDetails
 
     return (
@@ -284,7 +285,7 @@ const NewEvent = (props) => {
                     />
                 </label>}
 
-            <label style={interact}>
+            <label style={interactMore}>
                 Place Name
                 <input
                     name="place"
@@ -294,7 +295,7 @@ const NewEvent = (props) => {
                 />
             </label>
 
-            <label style={interact}>
+            <label style={interactMore}>
                 Address
                 <input
                     name="address"
@@ -304,7 +305,7 @@ const NewEvent = (props) => {
                 />
             </label>
 
-            <label style={interact}>
+            <label style={interactMore}>
                 Phone Number
                 <input
                     type= "tel"

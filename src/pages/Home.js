@@ -16,7 +16,7 @@ const Home = () => {
                 <h2>Book or create an event at your nearest Gurdwara Sahib!</h2>
                 <form>
                     <input type="email" id="email" name="email" placeholder="Enter email address" />
-                    <button><Link to="/sign-up"><label for="email">Sign Up for Free!</label></Link></button>
+                    <button><Link to="/sign-up"><label htmlFor="email">Sign Up for Free!</label></Link></button>
                 </form>
             </section>
             <section className="services-breakdown">

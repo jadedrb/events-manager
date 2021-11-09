@@ -41,8 +41,16 @@
     width: 100vw;
   }
 
-  #t-slots {
-    position: relative;
+  .event-details {
+    display: grid;
+    grid-template: 60px / 1fr;
+    border: 5px solid black;
+    border: 1px solid red;
+  }
+  
+  .t-slots {
+    display: grid;
+    outline: 3px solid blue;
   }
 
   .t-slot-row {
