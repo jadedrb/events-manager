@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 
-import NavBar from './components/NavBar';
+// import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import Events from './pages/Events';
 import NewEvent from './pages/NewEvent';
@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setEvent } from './actions/actions'
 import NavBarTest from './components/NavBarTest';
 import Footer from './components/Footer';
+import Paath from './pages/Paath';
 
 function App() {
 
@@ -35,7 +36,8 @@ function App() {
             <NavBarTest />
             <Switch>
                 <Route exact path="/" component={Home} />
-                <Route path="/events" component={Events} />
+                <Route exact path="/events" component={Events} />
+                <Route path="/events/:id" component={Paath} />
                 <Route path="/new-event" render={() => <NewEvent events={events} />} />
             </Switch>
             <Footer />

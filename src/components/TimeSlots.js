@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 
 const TimeSlots = ({ event }) => {
 
@@ -23,7 +23,6 @@ const TimeSlots = ({ event }) => {
 
     }, [])
 
-    let disabledDays = {}
     let currentDate = new Date(startDate);
     currentDate.setDate(currentDate.getDate() + 1);
 
@@ -50,6 +49,8 @@ const TimeSlots = ({ event }) => {
                 break;
             case 16:
                 result = 4 + m
+                break;
+            default:
                 break;
         }
 

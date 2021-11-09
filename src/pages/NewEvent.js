@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { v4 as uuid } from 'uuid'
 
-import { addEvent, toggleEventDetails } from '../actions/actions';
+import { addEvent } from '../actions/actions';
 
 import Calendar from 'react-calendar';
 
@@ -202,10 +202,10 @@ const NewEvent = (props) => {
         console.log('next or previous')
     }
 
-    const handleClickedDetails = () => {
-        history.push(`/events/${event.bookedDetails.ev.id}`)
-        dispatch(toggleEventDetails(event.bookedDetails.ev))
-    }
+    // const handleClickedDetails = () => {
+    //     history.push(`/events/${event.bookedDetails.ev.id}`)
+    //     dispatch(toggleEventDetails(event.bookedDetails.ev))
+    // }
 
     let greyedOutStyle = {
         opacity: ".1",
@@ -257,7 +257,7 @@ const NewEvent = (props) => {
                         <div><span>{`${booked.ev?.langarDate.mm}/${booked.ev?.langarDate.dd}/${booked.ev?.langarDate.yy}`}</span> has already been booked</div>
                         <div><span>Booked by:</span> {booked.ev?.user}</div>
                         <div><span>Phone number:</span> {booked.ev?.phone}</div>
-                        <div onClick={handleClickedDetails}><span>More details</span></div>
+                        {/* <div onClick={handleClickedDetails}><span>More details</span></div> */}
                     </div>
                 </label>}
 

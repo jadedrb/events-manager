@@ -16,20 +16,3 @@ const Modal = ({ children }) => {
 }
 
 export default Modal;
-
-// class Modal extends Component {
-    
-//     componentDidMount() {
-//         portalRoot.appendChild(element)
-//     }
-
-//     componentWillUnmount() {
-//         portalRoot.removeChild(element)
-//     }
-    
-//     render() { 
-//         return ReactDOM.createPortal(this.props.children, element)
-//     }
-// }
- 
-// export default Modal;
