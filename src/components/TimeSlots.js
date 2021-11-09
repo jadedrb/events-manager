@@ -6,6 +6,7 @@ const TimeSlots = ({ event }) => {
     let { startDate, endDate } = event
     let slotDateRef = useRef({})
     let slotTimeRef = useRef({})
+    let slotDisableRef = useRef({})
     let [days] = useState((new Date(endDate) - new Date(startDate)) / 1000 / 60 / 60 / 24)
     
     // let [slotTable, setSlotTable] = useState(null)
@@ -16,10 +17,13 @@ const TimeSlots = ({ event }) => {
         setTimeout(() => {
             console.log(slotDateRef.current)
             console.log(slotTimeRef.current)
+            console.log(slotDisableRef.current)
         }, 1000)
+
 
     }, [])
 
+    let disabledDays = {}
     let currentDate = new Date(startDate);
     currentDate.setDate(currentDate.getDate() + 1);
 
@@ -69,6 +73,7 @@ const TimeSlots = ({ event }) => {
         let month = months[currentDate.getMonth() + 1]
         let dayy = currentDate.getDate()
         currentDate.setDate(currentDate.getDate() + 1);
+        if (result === 'Sun') slotDisableRef.current[`${col}`] = true
         if (col && row === 0) {
             dow++
             slotDateRef.current[`${col}`] = `${month}/${dayy} ${result}`
@@ -76,6 +81,15 @@ const TimeSlots = ({ event }) => {
         }
         else 
             return
+        
+    }
+
+    const disableOrNot = (row, col) => {
+        if (slotDisableRef.current[`${col}`]) {
+            if (row > 1 && row < 9) 
+                return 'd-slot'
+        }
+        return ''
     }
 
     return (
@@ -88,7 +102,7 @@ const TimeSlots = ({ event }) => {
                                 <div 
                                     key={j} 
                                     id={`${i}-${j}`} 
-                                    className={`t-slot-column c-${j} r-${i}`}
+                                    className={`t-slot-column c-${j} r-${i} ${disableOrNot(i, j)}`}
                                     onClick={handleSlotClick}
                                 >
                                     <span>
@@ -106,3 +120,38 @@ const TimeSlots = ({ event }) => {
 }
 
 export default TimeSlots
+
+
+
+
+
+
+
+
+/*
+
+let slotTable = [...Array(12)].map((_,i) => {
+            return (
+                <div key={i} className={`t-slot-row ${!i ? 'r-dates' : ''}`}>
+                    {[...Array(days + 1)].map((_,j) => {
+                        return (
+                            <div 
+                                key={j} 
+                                id={`${i}-${j}`} 
+                                className={`t-slot-column c-${j} r-${i}`}
+                                onClick={handleSlotClick}
+                            >
+                                <span>
+                                    {calculateDayOfWeek(i, j)}
+                                    {calculateTimeRow(i, j)}
+                                </span>
+                            </div>
+                        )
+                    })}
+                </div>
+            )
+        })
+
+        setSlotTable({ slotTable })
+
+*/

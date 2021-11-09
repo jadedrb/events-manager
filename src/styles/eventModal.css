@@ -53,10 +53,6 @@
     overflow: auto;
   }
 
-  .t-slots div {
-    cursor: pointer;
-  }
-
   .t-slot-row {
     display: flex;
     justify-content: stretch;
@@ -71,6 +67,7 @@
     max-width: min-content;
     font-size: 50%;
     background-color: rgb(176, 239, 255);
+    cursor: pointer;
   }
 
   .c-0 {
@@ -87,6 +84,15 @@
     background-color: rgb(255, 255, 255);
   }
 
-  .r-dates {
-  
+  .r-0 {
+    cursor: default;
+  }
+
+  .c-0 {
+    cursor: default;
+  }
+
+  .d-slot {
+    background-color: rgb(100, 100, 100);
+    cursor: default;
   }
