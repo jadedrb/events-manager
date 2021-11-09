@@ -44,26 +44,49 @@
   .event-details {
     display: grid;
     grid-template: 60px / 1fr;
-    border: 5px solid black;
-    border: 1px solid red;
   }
   
   .t-slots {
     display: grid;
-    outline: 3px solid blue;
+    position: relative;
+    background-color: rgb(100, 100, 100);
     overflow: auto;
+  }
+
+  .t-slots div {
+    cursor: pointer;
   }
 
   .t-slot-row {
     display: flex;
-    justify-content: space-around;
-    outline: 1px solid black;
+    justify-content: stretch;
     height: 50px;
+    border-bottom: 1px solid black;
+    
   }
 
   .t-slot-column {
-    outline: 1px solid black;
-    /* width: 100%; */
-    width: 50px;
+    border-right: 1px solid black;
+    min-width: 100px;
+    max-width: min-content;
     font-size: 50%;
+    background-color: rgb(176, 239, 255);
+  }
+
+  .c-0 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+  }
+
+  .r-0 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+  }
+
+  .r-dates {
+  
   }

@@ -1,42 +1,63 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 const TimeSlots = ({ event }) => {
 
     let { startDate, endDate } = event
-
+    let slotDateRef = useRef({})
+    let slotTimeRef = useRef({})
     let [days] = useState((new Date(endDate) - new Date(startDate)) / 1000 / 60 / 60 / 24)
-
     
+    // let [slotTable, setSlotTable] = useState(null)
+    // let slots = useSelector(state => state.slots.slots.filter(s => s.id === event.eventId))
 
-    console.log(days)
-    // console.log(new Date(days))
-// 6am - 5pm (11hrs)
+    useEffect(() => {
+
+        setTimeout(() => {
+            console.log(slotDateRef.current)
+            console.log(slotTimeRef.current)
+        }, 1000)
+
+    }, [])
+
     let currentDate = new Date(startDate);
     currentDate.setDate(currentDate.getDate() + 1);
-    console.log(currentDate, currentDate.getDay())
-    let slots = useSelector(state => state.slots.slots.filter(s => s.id === event.eventId))
 
     let daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     var months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7:'Jul', 8: 'Aug', 9: 'Sep', 10:'Oct',11: 'Nov', 12: 'Dec'}
-    //let daysOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
     const calculateTimeRow = (row, col) => {
-        if (col !== 0) return
+        if (col !== 0 || row === 0) return
         let baseTime = 5
         let m = row >= 7 ? 'PM' : 'AM';
+        let result;
+        
         if (row >= 1 && row <= 7)
-            return (baseTime + row) + m
+            result = (baseTime + row) + m
         switch (baseTime + row) {
             case 13:
-                return 1 + m
+                result = 1 + m
+                break;
             case 14:
-                return 2 + m
+                result = 2 + m
+                break;
             case 15:
-                return 3 + m
+                result = 3 + m
+                break;
             case 16:
-                return 4 + m
+                result = 4 + m
+                break;
         }
+
+        slotTimeRef.current[`${row}`] = result
+        return result
+    }
+
+    const handleSlotClick = (e) => {
+        let idInfo = e.target.id.split("-")
+        let row = idInfo[0]
+        let col = idInfo[1]
+        console.log(`You clicked on slot ${e.target.id}, which is ${slotTimeRef.current[row]} on ${slotDateRef.current[col]}`)
     }
 
     let dow = currentDate.getDay()
@@ -50,6 +71,7 @@ const TimeSlots = ({ event }) => {
         currentDate.setDate(currentDate.getDate() + 1);
         if (col && row === 0) {
             dow++
+            slotDateRef.current[`${col}`] = `${month}/${dayy} ${result}`
             return `${month}/${dayy} ${result}`
         }
         else 
@@ -60,12 +82,19 @@ const TimeSlots = ({ event }) => {
         <div className='t-slots'>
             {[...Array(12)].map((_,i) => {
                 return (
-                    <div key={i} className='t-slot-row'>
-                        {[...Array(days + 1)].map((d,j) => {
+                    <div key={i} className={`t-slot-row ${!i ? 'r-dates' : ''}`}>
+                        {[...Array(days + 1)].map((_,j) => {
                             return (
-                                <div key={j} className='t-slot-column'>
-                                    {calculateDayOfWeek(i, j)}
-                                    {calculateTimeRow(i, j)}
+                                <div 
+                                    key={j} 
+                                    id={`${i}-${j}`} 
+                                    className={`t-slot-column c-${j} r-${i}`}
+                                    onClick={handleSlotClick}
+                                >
+                                    <span>
+                                        {calculateDayOfWeek(i, j)}
+                                        {calculateTimeRow(i, j)}
+                                    </span>
                                 </div>
                             )
                         })}
