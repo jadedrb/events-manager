@@ -18,6 +18,7 @@ const TimeSlots = ({ event }) => {
     let slots = useSelector(state => state.slots.slots.filter(s => s.id === event.eventId))
 
     let daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7:'Jul', 8: 'Aug', 9: 'Sep', 10:'Oct',11: 'Nov', 12: 'Dec'}
     //let daysOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
     const calculateTimeRow = (row, col) => {
@@ -44,9 +45,12 @@ const TimeSlots = ({ event }) => {
         if (row !== 0 || col === 0) return
         if (dow > 6) dow = 0
         let result = daysOfWeek[dow]
+        let month = months[currentDate.getMonth() + 1]
+        let dayy = currentDate.getDate()
+        currentDate.setDate(currentDate.getDate() + 1);
         if (col && row === 0) {
             dow++
-            return result
+            return `${month}/${dayy} ${result}`
         }
         else 
             return

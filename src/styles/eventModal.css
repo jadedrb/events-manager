@@ -51,15 +51,19 @@
   .t-slots {
     display: grid;
     outline: 3px solid blue;
+    overflow: auto;
   }
 
   .t-slot-row {
     display: flex;
     justify-content: space-around;
     outline: 1px solid black;
+    height: 50px;
   }
 
   .t-slot-column {
     outline: 1px solid black;
-    width: 100%;
+    /* width: 100%; */
+    width: 50px;
+    font-size: 50%;
   }
