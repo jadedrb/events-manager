@@ -7,6 +7,8 @@ import { v4 as uuid } from 'uuid'
 
 import { addEvent } from '../actions/actions';
 
+import { addWeeks } from 'date-fns'
+
 import Calendar from 'react-calendar';
 
 import '../styles/calendar.css'
@@ -202,6 +204,14 @@ const NewEvent = (props) => {
         console.log('next or previous')
     }
 
+    const weeksFromNow = (n) => {
+        let dayInFuture = addWeeks(new Date(event.startDate), n)
+        let mm = dayInFuture.getMonth() + 1
+        let dd = dayInFuture.getDate()
+        let yy = dayInFuture.getFullYear()
+        return `${yy}-${mm}-${dd}`
+    }
+
     // const handleClickedDetails = () => {
     //     history.push(`/events/${event.bookedDetails.ev.id}`)
     //     dispatch(toggleEventDetails(event.bookedDetails.ev))
@@ -278,6 +288,7 @@ const NewEvent = (props) => {
                     <input
                         name="endDate"
                         min={event.startDate}
+                        max={weeksFromNow(2)}
                         type="date"
                         value={event.endDate}
                         onChange={handleChange}

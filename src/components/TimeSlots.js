@@ -27,7 +27,7 @@ const TimeSlots = ({ event }) => {
     currentDate.setDate(currentDate.getDate() + 1);
 
     let daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    var months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7:'Jul', 8: 'Aug', 9: 'Sep', 10:'Oct',11: 'Nov', 12: 'Dec'}
+    // var months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7:'Jul', 8: 'Aug', 9: 'Sep', 10:'Oct',11: 'Nov', 12: 'Dec'}
 
     const calculateTimeRow = (row, col) => {
         if (col !== 0 || row === 0) return
@@ -50,6 +50,9 @@ const TimeSlots = ({ event }) => {
             case 16:
                 result = 4 + m
                 break;
+            case 17:
+                result = 5 + m
+                break;
             default:
                 break;
         }
@@ -59,9 +62,10 @@ const TimeSlots = ({ event }) => {
     }
 
     const handleSlotClick = (e) => {
-        let idInfo = e.target.id.split("-")
-        let row = idInfo[0]
-        let col = idInfo[1]
+        let [row, col] = e.target.id.split("-")
+        let time = slotTimeRef.current[row]
+        let date = slotDateRef.current[col]
+        if (!time || !date || e.target.className.includes('d-slot')) return
         console.log(`You clicked on slot ${e.target.id}, which is ${slotTimeRef.current[row]} on ${slotDateRef.current[col]}`)
     }
 
@@ -71,7 +75,7 @@ const TimeSlots = ({ event }) => {
         if (row !== 0 || col === 0) return
         if (dow > 6) dow = 0
         let result = daysOfWeek[dow]
-        let month = months[currentDate.getMonth() + 1]
+        let month = currentDate.getMonth() + 1
         let dayy = currentDate.getDate()
         currentDate.setDate(currentDate.getDate() + 1);
         if (result === 'Sun') slotDisableRef.current[`${col}`] = true
@@ -87,7 +91,7 @@ const TimeSlots = ({ event }) => {
 
     const disableOrNot = (row, col) => {
         if (slotDisableRef.current[`${col}`]) {
-            if (row > 1 && row < 9) 
+            if (row > 1 && row < 10) 
                 return 'd-slot'
         }
         return ''
@@ -95,7 +99,7 @@ const TimeSlots = ({ event }) => {
 
     return (
         <div className='t-slots'>
-            {[...Array(12)].map((_,i) => {
+            {[...Array(13)].map((_,i) => {
                 return (
                     <div key={i} className={`t-slot-row ${!i ? 'r-dates' : ''}`}>
                         {[...Array(days + 1)].map((_,j) => {
