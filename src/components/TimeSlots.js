@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
-// import { useSelector } from 'react-redux'
+import SlotModal from './SlotModal'
 
 const TimeSlots = ({ event }) => {
 
     let { startDate, endDate } = event
+
     let slotDateRef = useRef({})
     let slotTimeRef = useRef({})
     let slotDisableRef = useRef({})
+
     let [days] = useState((new Date(endDate) - new Date(startDate)) / 1000 / 60 / 60 / 24)
+    let [modal, setModal] = useState(false)
     
     // let [slotTable, setSlotTable] = useState(null)
     // let slots = useSelector(state => state.slots.slots.filter(s => s.id === event.eventId))
@@ -67,6 +70,7 @@ const TimeSlots = ({ event }) => {
         let date = slotDateRef.current[col]
         if (!time || !date || e.target.className.includes('d-slot')) return
         console.log(`You clicked on slot ${e.target.id}, which is ${slotTimeRef.current[row]} on ${slotDateRef.current[col]}`)
+        modal ? setModal(!modal) : setModal({ row, col, time, date, event })
     }
 
     let dow = currentDate.getDay()
@@ -120,6 +124,7 @@ const TimeSlots = ({ event }) => {
                     </div>
                 )
             })}
+            {modal && <SlotModal slot={modal} closeModal={setModal} />}
         </div>
     )
 }
