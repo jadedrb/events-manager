@@ -128,6 +128,7 @@ const TimeSlots = ({ event }) => {
             if (currentSlot.user === user) {
                 modal ? setModal(!modal) : setModal({ row, col, time, date, event, currentSlot })
             }
+            else modal ? setModal(!modal) : setModal({ row, col, time, date, event, currentSlot, viewOnly: true })
         } 
         // Because no corresponding info was found for slot, any user can access blank slot
         else {

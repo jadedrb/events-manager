@@ -31,12 +31,13 @@ const NewEvent = (props) => {
         endDate: '',
         place: '',
         address: '',
-        number: '',
         langarDate: { dd: '', mm: '', yy: '' },
         bookedDetails: {},
         bookedDays: {},
         selectedDay: { dd: '', mm: '', yy: '' }
     })
+
+    let [phone, setPhone] = useState('')
 
     useEffect(() => {
         // Determine default dates for Langar type events
@@ -141,7 +142,7 @@ const NewEvent = (props) => {
             newEvent = {
                 ...baseEvent,
                 langarDate: event.selectedDay,
-                phone: event.number
+                phone
             }
         } else {
             newEvent = {
@@ -204,6 +205,21 @@ const NewEvent = (props) => {
         console.log('next or previous')
     }
 
+    const handlePhone = (e) => {
+        let { value } = e.target
+        let lstChTypd = value.slice(-1)
+        
+        if (!/[1-9]/.test(Number(lstChTypd)) && lstChTypd !== '-' && lstChTypd) return
+        if (value.length === 13) return
+
+        if (value.length === 4 && !value.includes('-')) {
+            value = value.slice(0, 3) + '-' + value.slice(3)
+        } else if (value.length === 8 && value[7] !== '-') {
+            value = value.slice(0, 7) + '-' + value.slice(7)
+        }
+        setPhone(value)
+    }
+
     // const weeksFromNow = (n) => {
     //     let dayInFuture = addWeeks(new Date(event.startDate), n)
     //     let mm = dayInFuture.getMonth() + 1
@@ -223,7 +239,7 @@ const NewEvent = (props) => {
     }
 
     let interact = !event.type ? greyedOutStyle : null
-    let buttInt = ((event.type === 'langar' && event.selectedDay.dd) || (event.type === 'paath' && event.startDate && event.endDate)) && event.place && event.number && event.address ? null : greyedOutStyle
+    let buttInt = ((event.type === 'langar' && event.selectedDay.dd) || (event.type === 'paath' && event.startDate && event.endDate)) && event.place && phone && event.address ? null : greyedOutStyle
     let paath = event.type !== "langar"
     let interactMore = (!paath && !event.selectedDay.dd) || (paath && !event.startDate) ? greyedOutStyle : null
     let booked = event.bookedDetails
@@ -323,10 +339,11 @@ const NewEvent = (props) => {
                     type= "tel"
                     id="number"
                     name="number"
-                    value={event.number}
+                    value={phone}
                     placeholder="ex: 555-555-5555"
                     pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                    onChange={handleChange} required
+                    onChange={handlePhone} 
+                    required
                 />
             </label>
 
