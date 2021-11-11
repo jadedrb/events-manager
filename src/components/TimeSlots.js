@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import SlotModal from './SlotModal'
 
+import { v4 as uuid } from 'uuid'
+
+import { useDispatch, useSelector } from 'react-redux'
+import { setSlot } from '../actions/slotActions'
+
 const TimeSlots = ({ event }) => {
 
     let { startDate, endDate } = event
@@ -11,20 +16,54 @@ const TimeSlots = ({ event }) => {
 
     let [days] = useState((new Date(endDate) - new Date(startDate)) / 1000 / 60 / 60 / 24)
     let [modal, setModal] = useState(false)
-    
+
+    let [slotDate, setSlotDate] = useState({})
+    let [slotTime, setSlotTime] = useState({})
+    let [slotsDisabled, setSlotsDisabled] = useState({})
+
+    let [gridRows, setGridRows] = useState([...Array(13)])
+    let [gridCols] = useState([...Array(days + 1)])
+
+    let slots = useSelector(state => state.slots.slots.filter(s => s.eventId === event.id))
+    let dispatch = useDispatch()
+
     // let [slotTable, setSlotTable] = useState(null)
     // let slots = useSelector(state => state.slots.slots.filter(s => s.id === event.eventId))
-
+console.log('render')
     useEffect(() => {
 
-        setTimeout(() => {
-            console.log(slotDateRef.current)
-            console.log(slotTimeRef.current)
-            console.log(slotDisableRef.current)
-        }, 1000)
+        let currentStorage = localStorage.getItem("slots")
+        if (currentStorage) {
+            let parsedStorage = JSON.parse(currentStorage)
+            console.log(parsedStorage)
+            dispatch(setSlot(parsedStorage))
+        }
 
+        let hours = [...Array(13)]
+        let daysInRange = [...Array(days + 1)]
+
+        for (let row = 0; row < hours.length; row++) {
+
+            for (let col = 0; col < daysInRange.length; col++) {
+                calculateDayOfWeek(row, col)
+                calculateTimeRow(row, col)
+            }
+        }
+
+        console.log(slotDateRef.current)
+        console.log(slotTimeRef.current)
+        console.log(slotDisableRef.current)
+
+        setSlotDate({...slotDateRef.current})
+        setSlotTime({...slotTimeRef.current})
+        setSlotsDisabled({...slotDisableRef.current})
 
     }, [])
+
+    useEffect(() => {
+        console.log('slots changed...')
+        console.log(slots)
+    }, [slots])
 
     let currentDate = new Date(startDate);
     currentDate.setDate(currentDate.getDate() + 1);
@@ -61,13 +100,13 @@ const TimeSlots = ({ event }) => {
         }
 
         slotTimeRef.current[`${row}`] = result
-        return result
     }
 
     const handleSlotClick = (e) => {
-        let [row, col] = e.target.id.split("-")
-        let time = slotTimeRef.current[row]
-        let date = slotDateRef.current[col]
+        alert('ok')
+        let [row, col] = e.currentTarget.id.split("-")
+        let time = slotTime[row]
+        let date = slotDate[col]
         if (!time || !date || e.target.className.includes('d-slot')) return
         console.log(`You clicked on slot ${e.target.id}, which is ${slotTimeRef.current[row]} on ${slotDateRef.current[col]}`)
         modal ? setModal(!modal) : setModal({ row, col, time, date, event })
@@ -86,11 +125,7 @@ const TimeSlots = ({ event }) => {
         if (col && row === 0) {
             dow++
             slotDateRef.current[`${col}`] = `${month}/${dayy} ${result}`
-            return `${month}/${dayy} ${result}`
-        }
-        else 
-            return
-        
+        }   
     }
 
     const disableOrNot = (row, col) => {
@@ -101,12 +136,37 @@ const TimeSlots = ({ event }) => {
         return ''
     }
 
+    const slotMiniDetails = (slot) => {
+        return (
+            <div>
+                <p className='s-deets'>{slot.user}</p>
+                <p className='s-deets'>{slot.email}</p>
+                <p className='s-deets'>{slot.phone}</p>
+            </div>
+        )
+    }
+
+    const determineBooked = (row, col) => {
+        if (row === 0 || col === 0) return
+        let date = slotDateRef.current[`${col}`]
+        let time = slotTimeRef.current[`${row}`]
+       
+        let currentSlot = slots.filter(s => s.time === time && s.date === date)[0]
+        
+        if (currentSlot) 
+            return slotMiniDetails(currentSlot) 
+        else if (slotsDisabled[`${col}`] && row > 1 && row < 10)
+            return 
+        else 
+            return <p className='plus-symbol'><span>+</span></p>
+    }
+
     return (
         <div className='t-slots'>
-            {[...Array(13)].map((_,i) => {
+            {gridRows.map((_,i) => {
                 return (
                     <div key={i} className={`t-slot-row ${!i ? 'r-dates' : ''}`}>
-                        {[...Array(days + 1)].map((_,j) => {
+                        {gridCols.map((_,j) => {
                             return (
                                 <div 
                                     key={j} 
@@ -114,9 +174,10 @@ const TimeSlots = ({ event }) => {
                                     className={`t-slot-column c-${j} r-${i} ${disableOrNot(i, j)}`}
                                     onClick={handleSlotClick}
                                 >
-                                    <span>
-                                        {calculateDayOfWeek(i, j)}
-                                        {calculateTimeRow(i, j)}
+                                    <span className='t-span'>
+                                        {!i && slotDate[`${j}`]}
+                                        {!j && slotTime[`${i}`]}
+                                        {determineBooked(i, j)}
                                     </span>
                                 </div>
                             )
@@ -124,7 +185,7 @@ const TimeSlots = ({ event }) => {
                     </div>
                 )
             })}
-            {modal && <SlotModal slot={modal} closeModal={setModal} />}
+            {modal && <SlotModal slot={modal} closeModal={setModal} setGridRows={setGridRows} />}
         </div>
     )
 }

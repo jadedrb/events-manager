@@ -20,6 +20,16 @@
     border-radius: 5px;
     padding: 5px;
   }
+
+  .create-button:hover {
+    background-color: rgb(116, 249, 253);
+    cursor: pointer;
+  }
+
+  .create-button:active {
+    background-color: rgb(0, 0, 0);
+    color: white;
+  }
   
   #date-langar input {
       width: 140px;
@@ -43,7 +53,7 @@
     justify-content: space-around;
     position: absolute;
     opacity: .9;
-    background-color: white;
+    background-color: rgb(170, 242, 255);
     border: 1px dotted black;
     border-radius: 5px;
     height: 100%;

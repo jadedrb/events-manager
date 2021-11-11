@@ -161,8 +161,8 @@ const NewEvent = (props) => {
 
         let newEvent = packageEvent()
 
-        history.push('/events')
-
+        history.push('/')
+        alert('Event created!')
         dispatch(addEvent(newEvent))
 
         /*
@@ -204,13 +204,13 @@ const NewEvent = (props) => {
         console.log('next or previous')
     }
 
-    const weeksFromNow = (n) => {
-        let dayInFuture = addWeeks(new Date(event.startDate), n)
-        let mm = dayInFuture.getMonth() + 1
-        let dd = dayInFuture.getDate()
-        let yy = dayInFuture.getFullYear()
-        return `${yy}-${mm}-${dd}`
-    }
+    // const weeksFromNow = (n) => {
+    //     let dayInFuture = addWeeks(new Date(event.startDate), n)
+    //     let mm = dayInFuture.getMonth() + 1
+    //     let dd = dayInFuture.getDate()
+    //     let yy = dayInFuture.getFullYear()
+    //     return `${yy}-${mm}-${dd}`
+    // }
 
     // const handleClickedDetails = () => {
     //     history.push(`/events/${event.bookedDetails.ev.id}`)
@@ -223,6 +223,7 @@ const NewEvent = (props) => {
     }
 
     let interact = !event.type ? greyedOutStyle : null
+    let buttInt = ((event.type === 'langar' && event.selectedDay.dd) || event.type === 'paath' && event.startDate && event.endDate) && event.place && event.number && event.address ? null : greyedOutStyle
     let paath = event.type !== "langar"
     let interactMore = (!paath && !event.selectedDay.dd) || (paath && !event.startDate) ? greyedOutStyle : null
     let booked = event.bookedDetails
@@ -288,7 +289,7 @@ const NewEvent = (props) => {
                     <input
                         name="endDate"
                         min={event.startDate}
-                        max={weeksFromNow(2)}
+                        // max={weeksFromNow(2)}
                         type="date"
                         value={event.endDate}
                         onChange={handleChange}
@@ -329,7 +330,7 @@ const NewEvent = (props) => {
                 />
             </label>
 
-            <button className='create-button'>Create</button>
+            <button style={buttInt} className='create-button'>Create</button>
         </form>
 
     )
