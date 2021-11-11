@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid'
 
 import { addEvent } from '../actions/actions';
 
-import { addWeeks } from 'date-fns'
+// import { addWeeks } from 'date-fns'
 
 import Calendar from 'react-calendar';
 
@@ -223,7 +223,7 @@ const NewEvent = (props) => {
     }
 
     let interact = !event.type ? greyedOutStyle : null
-    let buttInt = ((event.type === 'langar' && event.selectedDay.dd) || event.type === 'paath' && event.startDate && event.endDate) && event.place && event.number && event.address ? null : greyedOutStyle
+    let buttInt = ((event.type === 'langar' && event.selectedDay.dd) || (event.type === 'paath' && event.startDate && event.endDate)) && event.place && event.number && event.address ? null : greyedOutStyle
     let paath = event.type !== "langar"
     let interactMore = (!paath && !event.selectedDay.dd) || (paath && !event.startDate) ? greyedOutStyle : null
     let booked = event.bookedDetails

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import SlotModal from './SlotModal'
 
-import { v4 as uuid } from 'uuid'
+// import { v4 as uuid } from 'uuid'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setSlot } from '../actions/slotActions'
@@ -21,15 +21,13 @@ const TimeSlots = ({ event }) => {
     let [slotTime, setSlotTime] = useState({})
     let [slotsDisabled, setSlotsDisabled] = useState({})
 
-    let [gridRows, setGridRows] = useState([...Array(13)])
+    let [gridRows] = useState([...Array(13)])
     let [gridCols] = useState([...Array(days + 1)])
 
     let slots = useSelector(state => state.slots.slots.filter(s => s.eventId === event.id))
+    let user = useSelector(state => state.users.currentUser)
     let dispatch = useDispatch()
 
-    // let [slotTable, setSlotTable] = useState(null)
-    // let slots = useSelector(state => state.slots.slots.filter(s => s.id === event.eventId))
-console.log('render')
     useEffect(() => {
 
         let currentStorage = localStorage.getItem("slots")
@@ -37,6 +35,29 @@ console.log('render')
             let parsedStorage = JSON.parse(currentStorage)
             console.log(parsedStorage)
             dispatch(setSlot(parsedStorage))
+        }
+
+        let currentDate = new Date(startDate);
+        currentDate.setDate(currentDate.getDate() + 1);
+    
+        let daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        
+        let dow = currentDate.getDay()
+
+        // Put this function in the useEffect so it would stop complaining
+        // about dependencies
+        const calculateDayOfWeek = (row, col) => {
+            if (row !== 0 || col === 0) return
+            if (dow > 6) dow = 0
+            let result = daysOfWeek[dow]
+            let month = currentDate.getMonth() + 1
+            let dayy = currentDate.getDate()
+            currentDate.setDate(currentDate.getDate() + 1);
+            if (result === 'Sun') slotDisableRef.current[`${col}`] = true
+            if (col && row === 0) {
+                dow++
+                slotDateRef.current[`${col}`] = `${month}/${dayy} ${result}`
+            }   
         }
 
         let hours = [...Array(13)]
@@ -58,18 +79,7 @@ console.log('render')
         setSlotTime({...slotTimeRef.current})
         setSlotsDisabled({...slotDisableRef.current})
 
-    }, [])
-
-    useEffect(() => {
-        console.log('slots changed...')
-        console.log(slots)
-    }, [slots])
-
-    let currentDate = new Date(startDate);
-    currentDate.setDate(currentDate.getDate() + 1);
-
-    let daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    // var months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun', 7:'Jul', 8: 'Aug', 9: 'Sep', 10:'Oct',11: 'Nov', 12: 'Dec'}
+    }, [days, dispatch, startDate])
 
     const calculateTimeRow = (row, col) => {
         if (col !== 0 || row === 0) return
@@ -103,29 +113,27 @@ console.log('render')
     }
 
     const handleSlotClick = (e) => {
-        alert('ok')
+
         let [row, col] = e.currentTarget.id.split("-")
         let time = slotTime[row]
         let date = slotDate[col]
+
+        // Ignore click if it was on a disabled or out of bounds slot
         if (!time || !date || e.target.className.includes('d-slot')) return
+
+        // Otherwise, try to find the info associated with the slot clicked
+        let currentSlot = slots.filter(s => s.time === time && s.date === date)[0]
+        if (currentSlot) {
+            // Grant access only to a logged in user who created it originally
+            if (currentSlot.user === user) {
+                modal ? setModal(!modal) : setModal({ row, col, time, date, event, currentSlot })
+            }
+        } 
+        // Because no corresponding info was found for slot, any user can access blank slot
+        else {
+            modal ? setModal(!modal) : setModal({ row, col, time, date, event })
+        }
         console.log(`You clicked on slot ${e.target.id}, which is ${slotTimeRef.current[row]} on ${slotDateRef.current[col]}`)
-        modal ? setModal(!modal) : setModal({ row, col, time, date, event })
-    }
-
-    let dow = currentDate.getDay()
-
-    const calculateDayOfWeek = (row, col) => {
-        if (row !== 0 || col === 0) return
-        if (dow > 6) dow = 0
-        let result = daysOfWeek[dow]
-        let month = currentDate.getMonth() + 1
-        let dayy = currentDate.getDate()
-        currentDate.setDate(currentDate.getDate() + 1);
-        if (result === 'Sun') slotDisableRef.current[`${col}`] = true
-        if (col && row === 0) {
-            dow++
-            slotDateRef.current[`${col}`] = `${month}/${dayy} ${result}`
-        }   
     }
 
     const disableOrNot = (row, col) => {
@@ -185,7 +193,7 @@ console.log('render')
                     </div>
                 )
             })}
-            {modal && <SlotModal slot={modal} closeModal={setModal} setGridRows={setGridRows} />}
+            {modal && <SlotModal slot={modal} closeModal={setModal} />}
         </div>
     )
 }
