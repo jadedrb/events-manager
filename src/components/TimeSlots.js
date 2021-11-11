@@ -147,10 +147,11 @@ const TimeSlots = ({ event }) => {
 
     const slotMiniDetails = (slot) => {
         return (
-            <div>
+            <div className={`s-deet ${slot.user !== user ? 'cur-user-no' : ''}`}>
                 <p className='s-deets'>{slot.user}</p>
                 <p className='s-deets'>{slot.email}</p>
                 <p className='s-deets'>{slot.phone}</p>
+                <p className={`minus-symbol ${slot.user !== user ? 'not-cur-user' : 'cur-user-yes'}`}><span>-</span></p>
             </div>
         )
     }

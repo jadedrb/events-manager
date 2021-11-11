@@ -1,16 +1,13 @@
-  .event-details p {
+  .event-details .event-p {
     display: flex;
     justify-content: space-around;
   }
   
-  .event-details .event-p span {
-    /* opacity: .4; */
-    font-weight: bolder;
-  }
+
   
-  .event-details p span:nth-child(1) {
+  .event-details .event-p span:nth-child(1) {
     opacity: 1;
-    font-weight: bolder;
+    font-weight: bold;
   }
 
 
@@ -102,6 +99,47 @@
     background-color: rgb(201, 255, 250);
   }
 
+  .minus-symbol {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    /* outline: 3px solid orange; */
+  }
+
+
+  .minus-symbol span {
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    font-size: 10pt;
+    color: grey;
+  }
+
+  .t-span .s-deet {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: 100%;
+    width: 100%;
+  }
+
+  .not-cur-user {
+    display: none;
+  }
+
+  .cur-user-no:hover {
+    /* background-color: rgb(158, 158, 223); */
+    outline: 3px solid rgb(158, 158, 223);
+  }
+
+  .cur-user-yes:hover {
+    background-color: rgb(255, 255, 255);
+    background-color: transparent;
+    outline: 3px solid rgb(0, 247, 255);
+  }
 
   /* .event-modal {
     border: 1px solid orange;

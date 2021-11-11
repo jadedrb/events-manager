@@ -1,6 +1,6 @@
 export const initialState = {
     users: [],
-    currentUser: 'George'
+    currentUser: 'Bob'
 }
 
 export default function eventReducer(state = initialState, action) {

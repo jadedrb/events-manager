@@ -15,7 +15,7 @@ const SlotModal = ({ slot, closeModal }) => {
 
     let nameRef = useRef()
     let emailRef = useRef()
-    let phoneRef = useRef()
+    // let phoneRef = useRef()
 
     let dispatch = useDispatch()
 
@@ -29,13 +29,13 @@ const SlotModal = ({ slot, closeModal }) => {
                 ...slot.currentSlot,
                 name: nameRef.current.value,
                 email: emailRef.current.value,
-                phone: phoneRef.current.value,
+                phone,
             }
         } else {
             newSlot = {
                 name: nameRef.current.value,
                 email: emailRef.current.value,
-                phone: phoneRef.current.value,
+                phone,
                 eventId: slot.event.id,
                 place: slot.event.place,
                 time: slot.time,
@@ -99,7 +99,7 @@ const SlotModal = ({ slot, closeModal }) => {
     const handlePhone = (e) => {
         let { value } = e.target
         let lstChTypd = value.slice(-1)
-        
+
         if (!/[1-9]/.test(Number(lstChTypd)) && lstChTypd !== '-' && lstChTypd) return
         if (value.length === 13) return
 
@@ -115,7 +115,7 @@ const SlotModal = ({ slot, closeModal }) => {
         <Modal>
             <div className='event-modal'>
                 <div className='event-details'>
-                    <p className='slot-p'><span>{slot.event.place}</span><span>{slot.date}</span> <span>{slot.time}</span></p>
+                    <p className='event-p'><span>{slot.event.place}</span>{slot.viewOnly ? <span style={{ color: 'grey' }}>{slot.time} on {slot.date} was booked</span> : <><span>{slot.time}</span> <span>{slot.date}</span></>}</p>
 
                     <form onSubmit={handleSubmit}>
                         <div>
